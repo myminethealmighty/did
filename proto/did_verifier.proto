@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package didverifier;
 
+option go_package = "didverifier/goclient/pb;pb";
+
 service DidVerifier {
   // Verifies a Verifiable Credential (VC) in VC-JWT or Data Integrity format
   rpc VerifyCredential (VerifyCredentialRequest) returns (VerifyCredentialResponse);

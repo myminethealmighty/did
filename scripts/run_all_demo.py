@@ -33,23 +33,40 @@ def main():
     time.sleep(2.5)
 
     try:
-        # 4. Step 4: Run gRPC Client Tests
-        print("\n[STEP 4] Executing gRPC Client Tests against DidVerifier service...")
+        failed = False
+
+        # 4. Step 4: Run Python gRPC Client Tests
+        print("\n[STEP 4] Executing Python gRPC client checks...")
         grpc_test_proc = subprocess.run([PYTHON_EXE, os.path.join(BASE_DIR, "scripts", "test_grpc_client.py")])
         if grpc_test_proc.returncode != 0:
-            print("gRPC client test failed!")
+            print("Python gRPC client check failed!")
+            failed = True
 
-        # 5. Step 5: Run GraphQL Client Queries
-        print("\n[STEP 5] Executing GraphQL Queries & Aggregations...")
+        # 5. Step 5: Run Go gRPC Client
+        print("\n[STEP 5] Executing Go gRPC client checks...")
+        go_test_proc = subprocess.run(["go", "run", "./goclient"], cwd=BASE_DIR)
+        if go_test_proc.returncode != 0:
+            print("Go gRPC client check failed!")
+            failed = True
+
+        # 6. Step 6: Run GraphQL Client Queries
+        print("\n[STEP 6] Executing GraphQL queries...")
         gql_test_proc = subprocess.run([PYTHON_EXE, os.path.join(BASE_DIR, "scripts", "test_graphql_client.py")])
         if gql_test_proc.returncode != 0:
             print("GraphQL client query failed!")
+            failed = True
 
         print("\n" + "=" * 70)
-        print("               ALL DEMO STEPS COMPLETED!")
-        print("               - gRPC Server:    localhost:50051")
-        print("               - GraphQL Web UI: http://localhost:8000/graphql")
+        if failed:
+            print("               DEMO FINISHED WITH FAILURES")
+        else:
+            print("               ALL DEMO STEPS COMPLETED!")
+        print("               - Python gRPC server: localhost:50051")
+        print("               - Go gRPC client:     goclient/")
+        print("               - GraphQL Web UI:     http://localhost:8000/graphql")
         print("=" * 70)
+        if failed:
+            sys.exit(1)
 
     finally:
         print("\nShutting down background service processes...")

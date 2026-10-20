@@ -11,3 +11,7 @@ data/verifications.db
 
 # Local architecture notes, not part of the public docs
 DID_VERIFIER_GUIDE.md
+
+# Go build output
+goclient/goclient
+*.exe

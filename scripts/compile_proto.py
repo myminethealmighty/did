@@ -21,7 +21,23 @@ def compile_proto():
     if res.returncode != 0:
         print('Error compiling proto:', res.stderr)
         sys.exit(1)
-    print('Compilation successful!')
+    print('Python stubs compiled.')
+
+    go_cmd = [
+        'protoc',
+        f'-I{PROTO_DIR}',
+        f'--go_out={BASE_DIR}',
+        '--go_opt=module=didverifier',
+        f'--go-grpc_out={BASE_DIR}',
+        '--go-grpc_opt=module=didverifier',
+        PROTO_FILE,
+    ]
+    go_res = subprocess.run(go_cmd, capture_output=True, text=True)
+    if go_res.returncode != 0:
+        print('Go stub compile skipped or failed:', go_res.stderr.strip() or go_res.stdout.strip())
+        print('Install protoc-gen-go and protoc-gen-go-grpc, then rerun this script.')
+        sys.exit(1)
+    print('Go stubs compiled into goclient/pb/.')
 
 if __name__ == '__main__':
     compile_proto()

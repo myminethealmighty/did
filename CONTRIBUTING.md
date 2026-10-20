@@ -26,7 +26,7 @@ pytest tests/test_verifier.py -v
 2. Create a branch named for the work, for example `fix-expired-credential-flag` or `add-audience-check`.
 3. Keep the change focused. A verification bug fix and a docs rewrite belong in separate pull requests.
 4. Match the style of the surrounding Python: clear names, small functions, and no unused imports.
-5. If you change `proto/did_verifier.proto`, regenerate the stubs and commit them:
+5. If you change `proto/did_verifier.proto`, regenerate the Python and Go stubs and commit them. `protoc-gen-go` and `protoc-gen-go-grpc` must be on your `PATH`.
 
    ```bash
    python scripts/compile_proto.py
@@ -39,10 +39,16 @@ pytest tests/test_verifier.py -v
    pytest tests/test_verifier.py -v
    ```
 
-For a change that touches the running servers, also run:
+For a change that touches the running servers or the Go client, also run:
 
 ```bash
 python scripts/run_all_demo.py
+```
+
+That command starts the Python services and runs both the Python and Go gRPC clients. To run only the Go client against an already running verifier:
+
+```bash
+go run ./goclient
 ```
 
 ## What to include in a pull request
@@ -67,7 +73,8 @@ python scripts/run_all_demo.py
 | `core/verifier_service.py` | Credential and presentation checks, audit writes |
 | `core/did_crypto.py` | Test key generation and VC-JWT signing |
 | `core/database.py` | SQLite schema and queries |
-| `grpc_service/` | gRPC API on port 50051 |
+| `grpc_service/` | Python gRPC API on port 50051 |
+| `goclient/` | Go client for that gRPC API |
 | `graphql_service/` | GraphQL API on port 8000 |
 | `scripts/` | Demo, sample credentials, and client checks |
 | `tests/test_verifier.py` | Unit coverage |
