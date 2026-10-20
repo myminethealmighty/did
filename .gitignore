@@ -1,0 +1,13 @@
+# Local environment
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.DS_Store
+
+# Generated local audit data
+data/verifications.db
+
+# Local architecture notes, not part of the public docs
+DID_VERIFIER_GUIDE.md

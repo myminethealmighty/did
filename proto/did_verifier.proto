@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package didverifier;
+
+service DidVerifier {
+  // Verifies a Verifiable Credential (VC) in VC-JWT or Data Integrity format
+  rpc VerifyCredential (VerifyCredentialRequest) returns (VerifyCredentialResponse);
+
+  // Verifies a Verifiable Presentation (VP)
+  rpc VerifyPresentation (VerifyPresentationRequest) returns (VerifyPresentationResponse);
+
+  // Quick health check for service liveness
+  rpc HealthCheck (HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+message VerifyCredentialRequest {
+  string credential_data = 1;       // Serialized VC JWT or JSON string
+  string audience = 2;              // Optional expected audience
+  string nonce = 3;                 // Optional replay challenge
+  bool require_status_check = 4;    // Enforce revocation status check
+}
+
+message VerifyCredentialResponse {
+  bool valid = 1;
+  string record_id = 2;             // Stored DB record UUID
+  string holder_did = 3;
+  string issuer_did = 4;
+  string credential_type = 5;
+  string format = 6;                // e.g., vc-jwt
+  bool expired = 7;
+  repeated string errors = 8;
+  string claims_json = 9;           // JSON string of verified claims
+  string verified_at = 10;          // ISO-8601 timestamp
+}
+
+message VerifyPresentationRequest {
+  string presentation_data = 1;     // Serialized VP or VP-JWT
+  string audience = 2;
+  string nonce = 3;
+  bool require_status_check = 4;
+}
+
+message VerifyPresentationResponse {
+  bool valid = 1;
+  string record_id = 2;
+  string holder_did = 3;
+  repeated string credential_types = 4;
+  repeated string errors = 5;
+  int32 credentials_count = 6;
+  string verified_at = 7;
+}
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  string status = 1;
+  string version = 2;
+  string timestamp = 3;
+}
